@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argo
+  template:
+    metadata:
+      labels:
+        app: argo
+    spec:
+      serviceAccountName: jenkins-admin
+      securityContext:
+            fsGroup: 1000 
+            runAsUser: 1000
+      containers:
+        - name: argo
+          image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:1.0
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+            requests:
+              memory: "500Mi"
+              cpu: "500m"
+          ports:
+            - name: httpport
+              containerPort: 80
+# livenessProbe :
+# HTTP GET 요청을 보내 90초 후부터 10초마다 확인합니다. 이 요청이 5번 연속으로 실패하면 (각각의 타임아웃은 5초), Kubernetes는 컨테이너를 자동으로 재시작
+          livenessProbe:
+            httpGet:
+              path: "/"
+              port: 80
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+# readinessProbe :
+# 60초가 지난 후에 동일한 "/login" 경로로 HTTP GET 요청을 보내기 시작하며, 10초마다 확인합니다. 이 프로브가 3번 연속으로 실패하면, Kubernetes는 해당 컨테이너를 준비되지 않은 것으로 표시하고, 새로운 트래픽을 보내지 않습니다
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /var/jenkins_home         
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+              claimName: jenkins-pv-claim
