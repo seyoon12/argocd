@@ -1,4 +1,4 @@
-//user-nodeport.yaml
+# user-nodeport.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,7 +12,7 @@ spec:
     protocol: TCP
   type: NodePort
 
-//admin-nodeport.yaml
+# admin-nodeport.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -26,7 +26,7 @@ spec:
     protocol: TCP
   type: NodePort
 
-//wordpress-ingresss.yaml
+# wordpress-ingresss.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
