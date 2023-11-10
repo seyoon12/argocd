@@ -1,12 +1,103 @@
-apiVersion: v1
-kind: Service
+//user-dp.yaml
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: nginx-service
+  name: user-wordpress
+  labels:
+    app: user-wordpress
 spec:
+  replicas: 1
   selector:
-    app: nginx
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: LoadBalancer
+    matchLabels:
+      app: user-wordpress
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1      
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: user-wordpress
+        tier: frontend
+    spec:
+      containers:
+        - image: kth3819/wp
+          name: user-wordpress
+          ports:
+            - containerPort: 80
+              name: user-wordpress
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          //
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+//admin-dp.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-wordpress
+  labels:
+    app: admin-wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-wordpress
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1      
+      maxUnavailable: 1 
+  template:
+    metadata:
+      labels:
+        app: admin-wordpress
+        tier: frontend
+    spec:
+      containers:
+        - image: kth3819/wp
+          name: admin-wordpress
+          ports:
+            - containerPort: 80
+              name: admin-wordpress
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+					//
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /wp-admin/
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /wp-admin/
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+         
