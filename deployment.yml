@@ -1,53 +1,103 @@
+//user-dp.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: argo-deployment
+  name: user-wordpress
+  labels:
+    app: user-wordpress
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: argo
+      app: user-wordpress
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1      
+      maxUnavailable: 1
   template:
     metadata:
       labels:
-        app: argo
+        app: user-wordpress
+        tier: frontend
     spec:
-      serviceAccountName: argocd-application-controller 
-      securityContext:
-            fsGroup: 1000 
-            runAsUser: 1000
       containers:
-        - name: argo
-          image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:29.0
-          securityContext:
-            runAsUser: 0
-          resources:
-            limits:
-              memory: "2Gi"
-              cpu: "1000m"
-            requests:
-              memory: "500Mi"
-              cpu: "500m"
+        - image: kth3819/wp
+          name: user-wordpress
           ports:
-            - name: httpport
-              containerPort: 80
-# livenessProbe :
-# HTTP GET 요청을 보내 90초 후부터 10초마다 확인합니다. 이 요청이 5번 연속으로 실패하면 (각각의 타임아웃은 5초), Kubernetes는 컨테이너를 자동으로 재시작
+            - containerPort: 80
+              name: user-wordpress
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          //
           livenessProbe:
             httpGet:
-              path: "/"
               port: 80
-            initialDelaySeconds: 90
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5
-# readinessProbe :
-# 60초가 지난 후에 동일한 "/login" 경로로 HTTP GET 요청을 보내기 시작하며, 10초마다 확인합니다. 이 프로브가 3번 연속으로 실패하면, Kubernetes는 해당 컨테이너를 준비되지 않은 것으로 표시하고, 새로운 트래픽을 보내지 않습니다
+              path: /
+            initialDelaySeconds: 30
+            periodSeconds: 15
           readinessProbe:
             httpGet:
-              path: "/"
+              path: /
               port: 80
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+//admin-dp.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-wordpress
+  labels:
+    app: admin-wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-wordpress
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1      
+      maxUnavailable: 1 
+  template:
+    metadata:
+      labels:
+        app: admin-wordpress
+        tier: frontend
+    spec:
+      containers:
+        - image: kth3819/wp
+          name: admin-wordpress
+          ports:
+            - containerPort: 80
+              name: admin-wordpress
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+					//
+          livenessProbe:
+            httpGet:
+              port: 80
+              path: /wp-admin/
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /wp-admin/
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+         
