@@ -1,4 +1,4 @@
-//user-dp.yaml
+# user-dp.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,7 +36,7 @@ spec:
               memory: "1024Mi"
               cpu: "500m"
           //
-//admin-dp.yaml
+# admin-dp.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
