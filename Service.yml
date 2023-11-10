@@ -1,103 +1,56 @@
-//user-dp.yaml
-apiVersion: apps/v1
-kind: Deployment
+//user-nodeport.yaml
+apiVersion: v1
+kind: Service
 metadata:
-  name: user-wordpress
-  labels:
+  name: user-nodeport
+spec:
+  selector:
     app: user-wordpress
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: user-wordpress
-      tier: frontend
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1      
-      maxUnavailable: 1
-  template:
-    metadata:
-      labels:
-        app: user-wordpress
-        tier: frontend
-    spec:
-      containers:
-        - image: kth3819/wp
-          name: user-wordpress
-          ports:
-            - containerPort: 80
-              name: user-wordpress
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1024Mi"
-              cpu: "500m"
-          //
-          livenessProbe:
-            httpGet:
-              port: 80
-              path: /
-            initialDelaySeconds: 30
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 15
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: NodePort
 
-//admin-dp.yaml
-apiVersion: apps/v1
-kind: Deployment
+//admin-nodeport.yaml
+apiVersion: v1
+kind: Service
 metadata:
-  name: admin-wordpress
-  labels:
-    app: admin-wordpress
+  name: admin-nodeport
 spec:
-  replicas: 1
   selector:
-    matchLabels:
-      app: admin-wordpress
-      tier: frontend
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1      
-      maxUnavailable: 1 
-  template:
-    metadata:
-      labels:
-        app: admin-wordpress
-        tier: frontend
-    spec:
-      containers:
-        - image: kth3819/wp
-          name: admin-wordpress
-          ports:
-            - containerPort: 80
-              name: admin-wordpress
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1024Mi"
-              cpu: "500m"
-					//
-          livenessProbe:
-            httpGet:
-              port: 80
-              path: /wp-admin/
-            initialDelaySeconds: 30
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /wp-admin/
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 15
+    app: admin-wordpress
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: NodePort
 
-         
+//wordpress-ingresss.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: user-nodeport
+              port:
+                number: 80
+        - path: /wp-admin
+          pathType: Prefix
+          backend:
+            service:
+              name: admin-nodeport
+              port:
+                number: 80
+
