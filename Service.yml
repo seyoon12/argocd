@@ -12,6 +12,7 @@ spec:
     protocol: TCP
   type: NodePort
 
+---
 # admin-nodeport.yaml
 apiVersion: v1
 kind: Service
@@ -26,6 +27,7 @@ spec:
     protocol: TCP
   type: NodePort
 
+---
 # wordpress-ingresss.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -53,4 +55,3 @@ spec:
               name: admin-nodeport
               port:
                 number: 80
-
