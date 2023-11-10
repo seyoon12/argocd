@@ -36,19 +36,6 @@ spec:
               memory: "1024Mi"
               cpu: "500m"
           //
-          livenessProbe:
-            httpGet:
-              port: 80
-              path: /
-            initialDelaySeconds: 30
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 15
-
 //admin-dp.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -86,18 +73,6 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-					//
-          livenessProbe:
-            httpGet:
-              port: 80
-              path: /wp-admin/
-            initialDelaySeconds: 30
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /wp-admin/
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 15
+
 
          
