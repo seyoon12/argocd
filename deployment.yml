@@ -23,7 +23,7 @@ spec:
         tier: frontend
     spec:
       containers:
-        - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:10.0
+        - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:11.0
           securityContext:
           runAsUser: 0
           name: user-wordpress
@@ -63,7 +63,7 @@ spec:
         tier: frontend
     spec:
       containers:
-        - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:10.0
+        - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:11.0
           securityContext:
           runAsUser: 0
           name: admin-wordpress
