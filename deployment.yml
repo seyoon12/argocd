@@ -24,6 +24,8 @@ spec:
     spec:
       containers:
         - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:9.0
+          securityContext:
+          runAsUser: 0
           name: user-wordpress
           ports:
             - containerPort: 80
@@ -62,6 +64,8 @@ spec:
     spec:
       containers:
         - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:9.0
+          securityContext:
+          runAsUser: 0
           name: admin-wordpress
           ports:
             - containerPort: 80
