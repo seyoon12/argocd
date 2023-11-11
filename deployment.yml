@@ -37,7 +37,7 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-        env:
+      env:
         - name: DB_NAME
           value: "db_name"
         - name: DB_USER
