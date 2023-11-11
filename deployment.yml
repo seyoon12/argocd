@@ -20,7 +20,7 @@ spec:
       containers:
       - name: rollout-bluegreen
         image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:5.0
-        #image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
+        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
         env:
         - name: DB_USER
           valueFrom:
