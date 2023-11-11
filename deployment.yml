@@ -39,16 +39,16 @@ spec:
               cpu: "500m"
       env:
         - name: DB_NAME
-          value: "db_name"
+          value: "wordpress"
         - name: DB_USER
-          value: "db_username"
+          value: "sstc"
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: wordpress-db-secrets
               key: db_password
         - name: DB_HOST
-          value: "rds_endpoint"
+          value: "gg05-rds.clvnjtk7wlyl.ap-northeast-2.rds.amazonaws.com"
 
 ---
 apiVersion: apps/v1
@@ -91,13 +91,13 @@ spec:
             cpu: "500m"
         env:
         - name: DB_NAME
-          value: "db_name"
+          value: "wordpress"
         - name: DB_USER
-          value: "db_username"
+          value: "sstc"
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: wordpress-db-secrets
               key: db_password
         - name: DB_HOST
-          value: "rds_endpoint"
+          value: "gg05-rds.clvnjtk7wlyl.ap-northeast-2.rds.amazonaws.com"
