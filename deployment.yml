@@ -1,30 +1,26 @@
-# user-dp.yaml
+# user-dp.yamlfrontend
 apiVersion: apps/v1
-kind: Deployment
+kind: Rollout  # Deplyment 대신 Rollout을 사용한다
 metadata:
-  name: user-wordpress
+  name: rollout-bluegreen-user
   labels:
-    app: user-wordpress
+    app: rollout-bluegreen-user
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-wordpress
+      app: rollout-bluegreen-user
       tier: frontend
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1      
-      maxUnavailable: 1
   template:
     metadata:
       labels:
-        app: user-wordpress
+        app: rollout-bluegreen-active
         tier: frontend
     spec:
       containers:
-      - name: user-wordpress
-        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
+      - name: rollout-bluegreen-user
+        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0:blue
+        #image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:7.0:green
         env:
         - name: DB_USER
           valueFrom:
@@ -48,56 +44,68 @@ spec:
           limits:
             memory: "1024Mi"
             cpu: "500m"
-
+    strategy:
+      blueGreen: 
+      #activeService는 이전의 배포된 Blue 서비스
+        activeService: rollout-bluegreen-active
+      
+      #previewService는 새롭게 배포될 Green 서비스
+        previewService: rollout-bluegreen-preview
+      
+      #autoPromotioEnabled 옵션은 Blue/Green 배포를 자동으로 진행할 것인지 여부. false 옵션을 사용해 수동으로 지정
+        autoPromotionEnabled: false
 
 ---
-apiVersion: apps/v1
-kind: Deployment
+  
+# user-nodeport.yaml
+apiVersion: v1
+kind: Service
 metadata:
-  name: admin-wordpress
-  labels:
-    app: admin-wordpress
+  name: rollout-bluegreen-active
 spec:
-  replicas: 1
   selector:
-    matchLabels:
-      app: admin-wordpress
-      tier: frontend
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1      
-      maxUnavailable: 1 
-  template:
-    metadata:
-      labels:
-        app: admin-wordpress
-        tier: frontend
-    spec:
-      containers:
-      - name: admin-wordpress
-        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
-        env:
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: wordpress-db-secrets
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: wordpress-db-secrets
-              key: DB_PASSWORD
-        securityContext:
-          runAsUser: 0
-        ports:
-        - containerPort: 80
-          name: admin-wordpress
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "1024Mi"
-            cpu: "500m"
+    app: rollout-bluegreen-active
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: NodePort
 
+---
+
+# user-nodeport.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollout-bluegreen-preview
+spec:
+  selector:
+    app: rollout-bluegreen-preview
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: NodePort
+
+---
+
+# wordpress-ingresss.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: rollout-bluegreen-active
+              port:
+                number: 80
