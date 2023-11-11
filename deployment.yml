@@ -18,9 +18,9 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: rollout-bluegreen-user
-        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0:blue
-        #image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:7.0:green
+      - name: rollout-bluegreen
+        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
+        #image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:7.0
         env:
         - name: DB_USER
           valueFrom:
