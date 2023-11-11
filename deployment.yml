@@ -37,18 +37,6 @@ spec:
           limits:
             memory: "1024Mi"
             cpu: "500m"
-        env:
-        - name: DB_NAME
-          value: "wordpress"
-        - name: DB_USER
-          value: "sstc"
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: wordpress-db-secrets
-              key: db_password
-        - name: DB_HOST
-          value: "gg05-rds.clvnjtk7wlyl.ap-northeast-2.rds.amazonaws.com"
 
 
 ---
@@ -90,16 +78,4 @@ spec:
           limits:
             memory: "1024Mi"
             cpu: "500m"
-        env:
-        - name: DB_NAME
-          value: "wordpress"
-        - name: DB_USER
-          value: "sstc"
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: wordpress-db-secrets
-              key: db_password
-        - name: DB_HOST
-          value: "gg05-rds.clvnjtk7wlyl.ap-northeast-2.rds.amazonaws.com"
 
