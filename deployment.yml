@@ -25,6 +25,12 @@ spec:
       containers:
       - name: user-wordpress
         image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: DB_PASSWORD
         securityContext:
           runAsUser: 0
         ports:
@@ -66,6 +72,12 @@ spec:
       containers:
       - name: admin-wordpress
         image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: DB_PASSWORD
         securityContext:
           runAsUser: 0
         ports:
