@@ -2,14 +2,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout  # Deplyment 대신 Rollout을 사용한다
 metadata:
-  name: rollout-bluegreen-user
+  name: ollout-bluegreen-active
   labels:
-    app: rollout-bluegreen-user
+    app: ollout-bluegreen-active
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rollout-bluegreen-user
+      app: rollout-bluegreen-active
       tier: frontend
   template:
     metadata:
