@@ -26,6 +26,11 @@ spec:
       - name: user-wordpress
         image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
         env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -73,6 +78,11 @@ spec:
       - name: admin-wordpress
         image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:6.0
         env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
