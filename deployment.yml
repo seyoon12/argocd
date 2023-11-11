@@ -37,8 +37,20 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
+        env:
+        - name: DB_NAME
+          value: "db_name"
+        - name: DB_USER
+          value: "db_username"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: db_password
+        - name: DB_HOST
+          value: "rds_endpoint"
+
 ---
-# admin-dp.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,20 +75,29 @@ spec:
         tier: frontend
     spec:
       containers:
-        - image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:13.0
-          securityContext:
+      - name: admin-wordpress
+        image: 535597585675.dkr.ecr.ap-northeast-2.amazonaws.com/product_ci:13.0
+        securityContext:
           runAsUser: 0
+        ports:
+        - containerPort: 80
           name: admin-wordpress
-          ports:
-            - containerPort: 80
-              name: admin-wordpress
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1024Mi"
-              cpu: "500m"
-
-
-         
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        env:
+        - name: DB_NAME
+          value: "db_name"
+        - name: DB_USER
+          value: "db_username"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wordpress-db-secrets
+              key: db_password
+        - name: DB_HOST
+          value: "rds_endpoint"
