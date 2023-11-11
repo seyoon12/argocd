@@ -64,7 +64,7 @@ metadata:
   name: rollout-bluegreen-active
 spec:
   selector:
-    app: rollout-bluegreen-active
+    app: rollout-bluegreen
   ports:
   - port: 80
     targetPort: 80
@@ -80,7 +80,7 @@ metadata:
   name: rollout-bluegreen-preview
 spec:
   selector:
-    app: rollout-bluegreen-preview
+    app: rollout-bluegreen
   ports:
   - port: 80
     targetPort: 80
